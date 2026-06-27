@@ -10,7 +10,9 @@ from app.db import base_all  # noqa: F401 — populate metadata
 from app.db.session import SessionLocal, engine
 from app.models.alumni_profile import AlumniProfile
 from app.models.community import Community
+from app.models.connection import Connection
 from app.models.invite import Invite
+from app.models.message import Message
 from app.models.mentorship import MentorProfile
 from app.models.opportunity import Opportunity
 from app.models.post import Post
@@ -104,6 +106,32 @@ def run() -> None:
                       description="Alumni working in cloud infrastructure."),
             Community(name="AI / Data Circle", slug="ai-data",
                       description="ML, data engineering and analytics alumni."),
+        ])
+
+        db.commit()
+
+        # Connections (engagement): asha<->vikram accepted, neha->asha pending
+        db.add_all([
+            Connection(
+                requester_id=users[0][0].id, addressee_id=users[1][0].id,
+                status="accepted",
+                responded_at=datetime.now(timezone.utc),
+            ),
+            Connection(
+                requester_id=users[2][0].id, addressee_id=users[0][0].id,
+                status="pending",
+            ),
+        ])
+        db.commit()
+
+        # A short conversation between connected alumni (asha & vikram)
+        db.add_all([
+            Message(sender_id=users[1][0].id, recipient_id=users[0][0].id,
+                    body="Hey Asha! Saw your Kubernetes post — would love to chat.",
+                    is_read=True),
+            Message(sender_id=users[0][0].id, recipient_id=users[1][0].id,
+                    body="Thanks Vikram! Happy to. Are you free this week?",
+                    is_read=False),
         ])
 
         # A pending invite to demo the accept flow

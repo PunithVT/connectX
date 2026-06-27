@@ -12,13 +12,22 @@ const stageOptions = [
   { value: "prototype", label: "Prototype" },
   { value: "mvp", label: "MVP" },
   { value: "revenue", label: "Revenue" },
+  { value: "scaling", label: "Scaling" },
 ];
 
+// Matches backend StartupProject.status vocabulary.
 const statusColor: Record<string, string> = {
-  applied: "var(--rooman-accent)",
+  submitted: "var(--rooman-accent)",
+  under_review: "var(--rooman-blue)",
   approved: "var(--rooman-green)",
-  active: "var(--rooman-blue)",
   rejected: "#bdb8ad",
+};
+
+const statusLabel: Record<string, string> = {
+  submitted: "submitted",
+  under_review: "under review",
+  approved: "approved",
+  rejected: "rejected",
 };
 
 export function StartupVarsityPage() {
@@ -79,7 +88,7 @@ export function StartupVarsityPage() {
               <div className="row between wrap gap-2">
                 <Badge>{p.stage}</Badge>
                 <Badge color={statusColor[p.status] ?? "var(--rooman-accent)"}>
-                  {p.status}
+                  {statusLabel[p.status] ?? p.status}
                 </Badge>
               </div>
               <h3 style={{ margin: "10px 0 4px" }}>{p.name}</h3>
