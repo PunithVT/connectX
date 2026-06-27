@@ -33,11 +33,11 @@ export function ProfileCard({ profile }: { profile: AlumniProfile }) {
       <div className="row wrap gap-2 mt-4">
         {profile.expertise_domain && <Badge>{profile.expertise_domain}</Badge>}
         {profile.location && (
-          <Badge color="var(--surface-raised)">📍 {profile.location}</Badge>
+          <Badge color="var(--surface-raised)">{profile.location}</Badge>
         )}
         {profile.program_trained && (
           <Badge color="var(--rooman-blue)" style={{ color: "#fff" }}>
-            🎓 {profile.program_trained}
+            {profile.program_trained}
             {profile.batch_year ? ` ’${String(profile.batch_year).slice(-2)}` : ""}
           </Badge>
         )}

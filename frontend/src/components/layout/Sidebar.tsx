@@ -3,17 +3,17 @@ import { NavLink } from "react-router-dom";
 import { useCurrentUser } from "@/features/auth/useAuth";
 
 const links = [
-  { to: "/", label: "Feed", icon: "🏠", end: true },
-  { to: "/directory", label: "Discover", icon: "🔍" },
-  { to: "/network", label: "My Network", icon: "🤝" },
-  { to: "/messages", label: "Messages", icon: "💬" },
-  { to: "/opportunities", label: "Opportunities", icon: "💼" },
-  { to: "/mentorship", label: "Mentorship", icon: "🎓" },
-  { to: "/events", label: "Events", icon: "📅" },
-  { to: "/startupvarsity", label: "StartupVarsity", icon: "🚀" },
-  { to: "/community", label: "Community", icon: "👥" },
-  { to: "/spotlight", label: "Spotlight", icon: "🌟" },
-  { to: "/profile", label: "My Profile", icon: "🪪" },
+  { to: "/", label: "Feed", end: true },
+  { to: "/directory", label: "Discover" },
+  { to: "/network", label: "My Network" },
+  { to: "/messages", label: "Messages" },
+  { to: "/opportunities", label: "Opportunities" },
+  { to: "/mentorship", label: "Mentorship" },
+  { to: "/events", label: "Events" },
+  { to: "/startupvarsity", label: "StartupVarsity" },
+  { to: "/community", label: "Community" },
+  { to: "/spotlight", label: "Spotlight" },
+  { to: "/profile", label: "My Profile" },
 ];
 
 export function Sidebar() {
@@ -38,7 +38,7 @@ export function Sidebar() {
             color: isActive ? "#fff" : "var(--rooman-ink)",
           })}
         >
-          <span>{l.icon}</span>
+          
           {l.label}
         </NavLink>
       ))}
@@ -58,7 +58,6 @@ export function Sidebar() {
             color: isActive ? "#fff" : "var(--rooman-ink)",
           })}
         >
-          <span>✉️</span>
           Invites (Admin)
         </NavLink>
       )}

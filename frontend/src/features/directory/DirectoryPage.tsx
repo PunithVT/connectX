@@ -97,7 +97,7 @@ export function DirectoryPage() {
               <div className="row wrap gap-2 mt-4">
                 {p.expertise_domain && <Badge>{p.expertise_domain}</Badge>}
                 {p.current_company && (
-                  <Badge color="var(--surface-raised)">🏢 {p.current_company}</Badge>
+                  <Badge color="var(--surface-raised)">{p.current_company}</Badge>
                 )}
               </div>
 

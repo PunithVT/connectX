@@ -69,7 +69,7 @@ function EventCard({ event }: { event: AlumniEvent }) {
     <Card surface="brutalist">
       <div className="row between" style={{ alignItems: "flex-start" }}>
         <div className="row gap-3" style={{ alignItems: "center" }}>
-          <span style={{ fontSize: 34 }}>{event.cover_emoji ?? "📅"}</span>
+          
           <div className="stack">
             <strong style={{ fontFamily: "var(--font-display)", fontSize: 17 }}>
               {event.title}
@@ -86,10 +86,10 @@ function EventCard({ event }: { event: AlumniEvent }) {
 
       <div className="row wrap gap-2 mt-4">
         {event.location && (
-          <Badge color="var(--surface-raised)">📍 {event.location}</Badge>
+          <Badge color="var(--surface-raised)">{event.location}</Badge>
         )}
         <Badge color="var(--surface-raised)">
-          👥 {event.attendee_count} going
+          {event.attendee_count} going
           {event.capacity != null ? ` / ${event.capacity}` : ""}
         </Badge>
         {event.host?.full_name && (
@@ -133,7 +133,7 @@ const emptyForm: CreateEventPayload = {
   meeting_url: "",
   starts_at: "",
   capacity: null,
-  cover_emoji: "📅",
+  cover_emoji: "",
 };
 
 export function EventsPage() {

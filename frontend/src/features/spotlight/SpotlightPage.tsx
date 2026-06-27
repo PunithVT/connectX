@@ -25,11 +25,11 @@ function StoryCard({ story }: { story: Spotlight }) {
           color="var(--rooman-accent)"
           style={{ position: "absolute", top: 12, right: 12 }}
         >
-          ⭐ Featured
+          Featured
         </Badge>
       )}
       <div className="row gap-3" style={{ alignItems: "center" }}>
-        <span style={{ fontSize: 40 }}>{story.cover_emoji ?? "🏆"}</span>
+        
         <div className="stack">
           <strong style={{ fontFamily: "var(--font-display)", fontSize: 18 }}>
             {story.title}
@@ -50,7 +50,7 @@ function StoryCard({ story }: { story: Spotlight }) {
 
       <div className="row between mt-4" style={{ alignItems: "center" }}>
         <Button variant="ghost" onClick={() => like.mutate()} disabled={like.isPending}>
-          ❤️ {story.likes}
+          ♥ {story.likes}
         </Button>
       </div>
     </Card>
@@ -61,7 +61,7 @@ const emptyForm: CreateSpotlightPayload = {
   title: "",
   story: "",
   program_trained: "",
-  cover_emoji: "🏆",
+  cover_emoji: "",
 };
 
 export function SpotlightPage() {
