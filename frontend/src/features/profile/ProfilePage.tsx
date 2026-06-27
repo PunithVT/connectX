@@ -1,6 +1,8 @@
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Avatar } from "@/components/roo/Avatar";
+import { ConnectButton } from "@/features/network/ConnectButton";
+import { EndorsementsCard } from "@/features/endorsements/EndorsementsCard";
 import { fetchMyProfile, fetchProfile } from "@/api/profile.api";
 import { initials, nameToHue, expertiseTags } from "@/lib/roo-utils";
 
@@ -8,9 +10,10 @@ export function ProfilePage() {
   const { userId } = useParams<{ userId?: string }>();
   const isOwn = !userId;
 
-  const { data: profile, isLoading } = useQuery({
+  const { data: profile, isLoading, isError } = useQuery({
     queryKey: isOwn ? ["profile", "me"] : ["profile", Number(userId)],
     queryFn: isOwn ? fetchMyProfile : () => fetchProfile(Number(userId!)),
+    retry: false,
   });
 
   if (isLoading) {
@@ -18,6 +21,28 @@ export function ProfilePage() {
       <div className="flex h-64 items-center justify-center text-muted-foreground">
         Loading profile…
       </div>
+    );
+  }
+
+  // Own profile may not exist yet (e.g. admin) — guide them to create it.
+  if (isOwn && (isError || !profile)) {
+    return (
+      <section className="mx-auto max-w-2xl px-6 py-12">
+        <h1 className="display text-3xl">My profile</h1>
+        <div className="mt-6 rounded-3xl border border-border bg-card p-8">
+          <h3 className="text-xl font-semibold">Let's set up your profile</h3>
+          <p className="mt-2 text-muted-foreground">
+            You don't have an alumni profile yet. Add where you work and your expertise
+            so the right people can find you.
+          </p>
+          <Link
+            to="/profile/edit"
+            className="mt-5 inline-block rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground"
+          >
+            Complete my profile
+          </Link>
+        </div>
+      </section>
     );
   }
 
@@ -63,13 +88,15 @@ export function ProfilePage() {
               </p>
             </div>
           </div>
-          {isOwn && (
+          {isOwn ? (
             <Link
               to="/profile/edit"
               className="rounded-full border border-border bg-card px-5 py-2.5 text-sm"
             >
               Edit profile
             </Link>
+          ) : (
+            <ConnectButton userId={Number(userId)} />
           )}
         </div>
 
@@ -138,6 +165,10 @@ export function ProfilePage() {
               </a>
             )}
           </aside>
+        </div>
+
+        <div className="mt-10">
+          <EndorsementsCard userId={profile.user_id} isOwn={isOwn} />
         </div>
       </div>
     </section>

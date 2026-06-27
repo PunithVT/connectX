@@ -55,6 +55,16 @@ export function StartupVarsityPage() {
         </div>
       </div>
 
+      <div className="mt-8 rounded-3xl border border-border bg-card p-6">
+        <strong className="display text-lg">
+          📈 Build your product with Rooman's resources.
+        </strong>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Alumni founders can apply for compute, mentorship, and lab access to develop
+          their products under StartupVarsity. Pitch your idea and request what you need.
+        </p>
+      </div>
+
       {showForm && (
         <form
           onSubmit={(e) => {

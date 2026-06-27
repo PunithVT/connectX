@@ -1,10 +1,15 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { createOpportunity, listOpportunities } from "@/api/opportunities.api";
+import { Badge, Card, Modal } from "@/components/ui";
+import { OpportunityCard } from "./OpportunityCard";
+import {
+  createOpportunity,
+  listMyApplications,
+  listOpportunities,
+} from "@/api/opportunities.api";
 import { timeAgo } from "@/lib/roo-utils";
 import type { CreateOpportunityPayload } from "@/types/api";
-import type { Opportunity } from "@/types/models";
 
 type KindFilter = "" | "hiring" | "seeking";
 
@@ -17,61 +22,19 @@ const INITIAL_FORM: CreateOpportunityPayload = {
   company: "",
 };
 
-function OpportunityCard({ opp }: { opp: Opportunity }) {
-  return (
-    <div className="rounded-2xl border border-border bg-card p-5 flex flex-col gap-3">
-      {/* Title row */}
-      <div className="flex items-start justify-between gap-3">
-        <h3 className="display text-xl leading-snug text-foreground">{opp.title}</h3>
-        <span
-          className={[
-            "chip shrink-0",
-            opp.kind === "hiring"
-              ? "border-accent/40 text-accent"
-              : "",
-          ]
-            .filter(Boolean)
-            .join(" ")}
-        >
-          {opp.kind === "hiring" ? "Hiring" : "Seeking"}
-        </span>
-      </div>
-
-      {/* Author + time */}
-      <p className="text-xs text-muted-foreground">
-        {opp.author?.full_name ?? "Anonymous"}
-        {opp.created_at ? (
-          <>
-            {" · "}
-            {timeAgo(opp.created_at)}
-          </>
-        ) : null}
-      </p>
-
-      {/* Description */}
-      {opp.description && (
-        <p className="text-sm text-foreground/80 line-clamp-3">{opp.description}</p>
-      )}
-
-      {/* Footer */}
-      <div className="flex flex-wrap items-center gap-2 mt-auto pt-1">
-        {(opp.location || opp.company) && (
-          <span className="text-xs text-muted-foreground">
-            {[opp.company, opp.location].filter(Boolean).join(" · ")}
-          </span>
-        )}
-        {opp.expertise_domain && (
-          <span className="chip text-xs ml-auto">{opp.expertise_domain}</span>
-        )}
-      </div>
-    </div>
-  );
-}
+const APP_STATUS_COLOR: Record<string, string> = {
+  applied: "var(--rooman-blue)",
+  shortlisted: "var(--rooman-accent)",
+  hired: "var(--rooman-green)",
+  rejected: "#bdb8ad",
+};
 
 export function OpportunitiesPage() {
   const qc = useQueryClient();
   const [kindFilter, setKindFilter] = useState<KindFilter>("");
+  const [domain, setDomain] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [myAppsOpen, setMyAppsOpen] = useState(false);
   const [form, setForm] = useState<CreateOpportunityPayload>(INITIAL_FORM);
   const [error, setError] = useState("");
 
@@ -81,9 +44,18 @@ export function OpportunitiesPage() {
   ) => setForm((f) => ({ ...f, [k]: v }));
 
   const { data: opps, isLoading } = useQuery({
-    queryKey: ["opportunities", kindFilter],
+    queryKey: ["opportunities", kindFilter, domain],
     queryFn: () =>
-      listOpportunities({ kind: kindFilter || undefined }),
+      listOpportunities({
+        kind: kindFilter || undefined,
+        domain: domain || undefined,
+      }),
+  });
+
+  const myApps = useQuery({
+    queryKey: ["my-applications"],
+    queryFn: listMyApplications,
+    enabled: myAppsOpen,
   });
 
   const create = useMutation({
@@ -143,13 +115,28 @@ export function OpportunitiesPage() {
           ))}
         </div>
 
-        {/* Post button */}
-        <button
-          onClick={() => setShowForm((v) => !v)}
-          className="chip border-accent/60 text-accent hover:bg-accent/10 transition-colors cursor-pointer"
-        >
-          {showForm ? "Cancel" : "+ Post an opportunity"}
-        </button>
+        {/* Domain filter + actions */}
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            type="text"
+            value={domain}
+            onChange={(e) => setDomain(e.target.value)}
+            placeholder="Filter by domain…"
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/40"
+          />
+          <button
+            onClick={() => setMyAppsOpen(true)}
+            className="chip cursor-pointer transition-colors hover:border-foreground/40"
+          >
+            My applications
+          </button>
+          <button
+            onClick={() => setShowForm((v) => !v)}
+            className="chip border-accent/60 text-accent hover:bg-accent/10 transition-colors cursor-pointer"
+          >
+            {showForm ? "Cancel" : "+ Post an opportunity"}
+          </button>
+        </div>
       </div>
 
       {/* Inline form */}
@@ -281,6 +268,46 @@ export function OpportunitiesPage() {
           ))}
         </div>
       )}
+
+      {/* My applications modal */}
+      <Modal
+        open={myAppsOpen}
+        onClose={() => setMyAppsOpen(false)}
+        title="My applications"
+      >
+        {myApps.isLoading ? (
+          <div className="cx-spinner" />
+        ) : !myApps.data?.length ? (
+          <p className="muted">
+            You haven't applied to anything yet. Apply from any hiring post.
+          </p>
+        ) : (
+          <div className="stack gap-3">
+            {myApps.data.map((a) => (
+              <Card key={a.id} surface="neu">
+                <div className="row between wrap gap-2" style={{ alignItems: "center" }}>
+                  <div className="stack">
+                    <strong>Application #{a.id}</strong>
+                    <span className="small muted">
+                      {a.referrer
+                        ? `Referred by ${a.referrer.full_name} · `
+                        : ""}
+                      {timeAgo(a.created_at)}
+                    </span>
+                  </div>
+                  <Badge
+                    color={APP_STATUS_COLOR[a.status] ?? "var(--surface-raised)"}
+                    style={{ color: a.status === "shortlisted" ? "var(--rooman-ink)" : "#fff" }}
+                  >
+                    {a.status}
+                  </Badge>
+                </div>
+                {a.note && <p className="small mt-2">{a.note}</p>}
+              </Card>
+            ))}
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

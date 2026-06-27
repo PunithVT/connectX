@@ -42,3 +42,20 @@ def get_current_admin(user: User = Depends(get_current_user)) -> User:
             detail="Admin privileges required",
         )
     return user
+
+
+def require_roles(*allowed: str):
+    """Dependency factory: allow only users whose role is in `allowed`.
+
+    Usage:  user = Depends(require_roles("admin", "moderator"))
+    """
+
+    def _guard(user: User = Depends(get_current_user)) -> User:
+        if user.role not in allowed:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Requires one of roles: {', '.join(allowed)}",
+            )
+        return user
+
+    return _guard

@@ -91,6 +91,7 @@ export interface MentorshipSession {
   status: string;
   payment_status: string;
   created_at?: string;
+  reviewed?: boolean;
 }
 
 export interface StartupProject {
@@ -137,4 +138,124 @@ export interface InvitePreview {
   full_name?: string | null;
   program_trained?: string | null;
   status: string;
+}
+
+export type ConnectionState =
+  | "none"
+  | "pending_outgoing"
+  | "pending_incoming"
+  | "connected"
+  | "self";
+
+export interface ConnectionStatus {
+  state: ConnectionState;
+  connection_id?: number | null;
+}
+
+export interface ConnectionUser {
+  connection_id: number;
+  status: string;
+  user: UserPublic;
+  headline?: string | null;
+  expertise_domain?: string | null;
+  current_company?: string | null;
+}
+
+export interface Message {
+  id: number;
+  sender_id: number;
+  recipient_id: number;
+  body: string;
+  is_read: boolean;
+  created_at?: string;
+}
+
+export interface Conversation {
+  peer: UserPublic;
+  last_message: string;
+  last_at?: string;
+  unread: number;
+}
+
+export type EventKind = "webinar" | "meetup" | "ama" | "launch" | "workshop";
+
+export interface AlumniEvent {
+  id: number;
+  host_id: number;
+  title: string;
+  description?: string | null;
+  kind: EventKind;
+  location?: string | null;
+  meeting_url?: string | null;
+  starts_at: string;
+  ends_at?: string | null;
+  capacity?: number | null;
+  cover_emoji?: string | null;
+  status: string;
+  created_at?: string;
+  host?: UserPublic | null;
+  attendee_count: number;
+  is_attending: boolean;
+  spots_left?: number | null;
+}
+
+export interface SkillEndorsement {
+  skill: string;
+  count: number;
+  endorsed_by_me: boolean;
+  endorsers: UserPublic[];
+}
+
+export interface MentorReview {
+  id: number;
+  mentor_id: number;
+  reviewer_id: number;
+  rating: number;
+  comment?: string | null;
+  created_at?: string;
+  reviewer?: UserPublic | null;
+}
+
+export interface MentorLeaderboardEntry {
+  mentor_id: number;
+  user: UserPublic;
+  headline?: string | null;
+  hourly_rate: number;
+  sessions_completed: number;
+  review_count: number;
+  avg_rating: number;
+}
+
+export interface GroupPost {
+  id: number;
+  community_id: number;
+  author_id: number;
+  body: string;
+  created_at?: string;
+  author?: UserPublic | null;
+}
+
+export interface Spotlight {
+  id: number;
+  user_id: number;
+  title: string;
+  story: string;
+  program_trained?: string | null;
+  cover_emoji?: string | null;
+  is_featured: boolean;
+  likes: number;
+  created_at?: string;
+  user?: UserPublic | null;
+}
+
+export interface Application {
+  id: number;
+  opportunity_id: number;
+  applicant_id: number;
+  referred_by?: number | null;
+  note?: string | null;
+  status: string;
+  created_at?: string;
+  applicant?: UserPublic | null;
+  referrer?: UserPublic | null;
 }

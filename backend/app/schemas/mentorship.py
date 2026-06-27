@@ -46,3 +46,4 @@ class SessionOut(BaseModel):
     status: str
     payment_status: str
     created_at: datetime | None = None
+    reviewed: bool = False

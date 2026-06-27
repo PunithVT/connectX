@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
@@ -156,6 +157,12 @@ export function CommunityPage() {
                     {joined ? "Joined" : "Join →"}
                   </button>
                 </div>
+                <Link
+                  to={`/community/${c.id}`}
+                  className="mt-3 block rounded-xl border border-border bg-secondary px-4 py-2 text-center text-sm font-medium text-foreground transition-colors hover:border-accent hover:text-accent"
+                >
+                  Open feed →
+                </Link>
               </div>
             );
           })}

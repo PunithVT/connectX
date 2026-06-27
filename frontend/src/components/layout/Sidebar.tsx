@@ -5,10 +5,14 @@ const links = [
   { to: "/dashboard", label: "Dashboard", icon: "⌂" },
   { to: "/feed", label: "Feed", icon: "✍" },
   { to: "/directory", label: "Directory", icon: "⌕" },
+  { to: "/network", label: "My Network", icon: "⇄" },
+  { to: "/messages", label: "Messages", icon: "✉" },
   { to: "/opportunities", label: "Opportunities", icon: "💼" },
   { to: "/mentorship", label: "Mentorship", icon: "◈" },
+  { to: "/events", label: "Events", icon: "▤" },
   { to: "/startupvarsity", label: "Startup Hub", icon: "▲" },
   { to: "/community", label: "Community", icon: "◉" },
+  { to: "/spotlight", label: "Spotlight", icon: "★" },
   { to: "/profile", label: "My Profile", icon: "◐" },
 ];
 
