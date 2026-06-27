@@ -29,5 +29,13 @@ frontend/.vite/
 .DS_Store
 roo-connect-hub-main/
 
+# Databases (local/runtime)
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated / scratch docs
+docs/superpowers/
+
 # Logs
 *.log
