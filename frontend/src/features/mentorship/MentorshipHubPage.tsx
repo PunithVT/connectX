@@ -125,7 +125,15 @@ export function MentorshipHubPage() {
         </div>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-8 rounded-2xl border border-border bg-card p-5">
+        <strong className="text-foreground">Get paid to share what you know.</strong>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Rooman alumni run mentorship sessions on Rooman programs at industry-standard
+          rates. Book a mentor below, or list yourself as one.
+        </p>
+      </div>
+
+      <div className="mt-4">
         <Tabs
           tabs={[
             { key: "mentors", label: "Find a mentor" },
@@ -240,7 +248,7 @@ export function MentorshipHubPage() {
                         textAlign: "center",
                       }}
                     >
-                      {i === 0 ? "🏆" : `#${i + 1}`}
+                      {`#${i + 1}`}
                     </strong>
                     <Avatar name={e.user?.full_name} size={44} />
                     <div className="stack">

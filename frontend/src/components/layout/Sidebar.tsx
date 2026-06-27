@@ -7,7 +7,7 @@ const links = [
   { to: "/directory", label: "Directory", icon: "⌕" },
   { to: "/network", label: "My Network", icon: "⇄" },
   { to: "/messages", label: "Messages", icon: "✉" },
-  { to: "/opportunities", label: "Opportunities", icon: "💼" },
+  { to: "/opportunities", label: "Opportunities", icon: "▦" },
   { to: "/mentorship", label: "Mentorship", icon: "◈" },
   { to: "/events", label: "Events", icon: "▤" },
   { to: "/startupvarsity", label: "Startup Hub", icon: "▲" },

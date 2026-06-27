@@ -67,7 +67,7 @@ export function PostCard({ post }: { post: Post }) {
               style={{ cursor: "pointer", background: "var(--surface-raised)" }}
               onClick={() => setShowComments((s) => !s)}
             >
-              💬 {post.comments.length}
+              {post.comments.length}
             </button>
           </div>
 

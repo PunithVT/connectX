@@ -92,9 +92,9 @@ export function OpportunityCard({ opp }: { opp: Opportunity }) {
 
       <h3 style={{ margin: "10px 0 4px" }}>{opp.title}</h3>
       <div className="row wrap gap-2 small muted">
-        {opp.company && <span>🏢 {opp.company}</span>}
-        {opp.expertise_domain && <span>🧭 {opp.expertise_domain}</span>}
-        {opp.location && <span>📍 {opp.location}</span>}
+        {opp.company && <span>{opp.company}</span>}
+        {opp.expertise_domain && <span>{opp.expertise_domain}</span>}
+        {opp.location && <span>{opp.location}</span>}
       </div>
 
       {opp.description && <p style={{ marginTop: 10 }}>{opp.description}</p>}

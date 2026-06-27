@@ -57,7 +57,7 @@ export function StartupVarsityPage() {
 
       <div className="mt-8 rounded-3xl border border-border bg-card p-6">
         <strong className="display text-lg">
-          📈 Build your product with Rooman's resources.
+          Build your product with Rooman's resources.
         </strong>
         <p className="mt-1 text-sm text-muted-foreground">
           Alumni founders can apply for compute, mentorship, and lab access to develop
