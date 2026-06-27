@@ -13,3 +13,5 @@ from app.models.opportunity import Opportunity  # noqa: F401
 from app.models.startup_project import StartupProject  # noqa: F401
 from app.models.community import Community, GroupMembership  # noqa: F401
 from app.models.notification import Notification  # noqa: F401
+from app.models.connection import Connection  # noqa: F401
+from app.models.message import Message  # noqa: F401
