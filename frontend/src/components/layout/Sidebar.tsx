@@ -4,10 +4,15 @@ import { useCurrentUser } from "@/features/auth/useAuth";
 
 const links = [
   { to: "/", label: "Feed", icon: "🏠", end: true },
+  { to: "/directory", label: "Discover", icon: "🔍" },
+  { to: "/network", label: "My Network", icon: "🤝" },
+  { to: "/messages", label: "Messages", icon: "💬" },
   { to: "/opportunities", label: "Opportunities", icon: "💼" },
   { to: "/mentorship", label: "Mentorship", icon: "🎓" },
+  { to: "/events", label: "Events", icon: "📅" },
   { to: "/startupvarsity", label: "StartupVarsity", icon: "🚀" },
   { to: "/community", label: "Community", icon: "👥" },
+  { to: "/spotlight", label: "Spotlight", icon: "🌟" },
   { to: "/profile", label: "My Profile", icon: "🪪" },
 ];
 

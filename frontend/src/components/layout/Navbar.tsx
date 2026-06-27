@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Avatar } from "@/components/ui";
 import { useCurrentUser, useLogout } from "@/features/auth/useAuth";
 import { listNotifications } from "@/api/notifications.api";
+import { listConversations } from "@/api/messages.api";
 
 export function Navbar() {
   const { data: me } = useCurrentUser();
@@ -16,6 +17,14 @@ export function Navbar() {
     refetchInterval: 60_000,
   });
   const unread = notifications?.length ?? 0;
+
+  const { data: conversations } = useQuery({
+    queryKey: ["conversations"],
+    queryFn: listConversations,
+    refetchInterval: 60_000,
+  });
+  const unreadMessages =
+    conversations?.reduce((sum, c) => sum + (c.unread ?? 0), 0) ?? 0;
 
   return (
     <header
@@ -45,6 +54,31 @@ export function Navbar() {
         </Link>
 
         <div className="row gap-3">
+          <Link to="/messages" className="nb-badge" style={{ position: "relative" }}>
+            💬
+            {unreadMessages > 0 && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: -8,
+                  right: -8,
+                  background: "var(--rooman-primary)",
+                  color: "#fff",
+                  borderRadius: "50%",
+                  border: "2px solid var(--rooman-ink)",
+                  minWidth: 20,
+                  height: 20,
+                  fontSize: 11,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "0 4px",
+                }}
+              >
+                {unreadMessages}
+              </span>
+            )}
+          </Link>
           <Link to="/notifications" className="nb-badge" style={{ position: "relative" }}>
             🔔
             {unread > 0 && (

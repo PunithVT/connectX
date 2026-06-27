@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 
 import { Button, Card } from "@/components/ui";
 import { ProfileCard } from "./ProfileCard";
+import { ConnectButton } from "@/features/network/ConnectButton";
+import { EndorsementsCard } from "@/features/endorsements/EndorsementsCard";
 import { fetchMyProfile, fetchProfile } from "@/api/profile.api";
 
 export function ProfilePage() {
@@ -43,13 +45,19 @@ export function ProfilePage() {
     <div className="stack gap-6">
       <div className="row between wrap gap-2">
         <h1 className="page-title">{isOwn ? "My profile" : "Profile"}</h1>
-        {isOwn && (
+        {isOwn ? (
           <Link to="/profile/edit">
             <Button variant="secondary">Edit profile</Button>
           </Link>
+        ) : (
+          <ConnectButton userId={Number(userId)} />
         )}
       </div>
       <ProfileCard profile={profile.data} />
+      <EndorsementsCard
+        userId={profile.data.user_id}
+        isOwn={isOwn}
+      />
     </div>
   );
 }

@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { Button, Card, Input, Modal, Select, Tabs, Textarea } from "@/components/ui";
+import { Badge, Button, Card, Input, Modal, Select, Tabs, Textarea } from "@/components/ui";
 import { useToast } from "@/components/ui/Toast";
 import { OpportunityCard } from "./OpportunityCard";
-import { createOpportunity, listOpportunities } from "@/api/opportunities.api";
+import {
+  createOpportunity,
+  listMyApplications,
+  listOpportunities,
+} from "@/api/opportunities.api";
 import { EXPERTISE_DOMAINS } from "@/lib/validators";
+import { timeAgo } from "@/lib/format";
 import type { CreateOpportunityPayload } from "@/types/api";
 
 const domainOptions = [
@@ -13,17 +18,30 @@ const domainOptions = [
   ...EXPERTISE_DOMAINS.map((d) => ({ value: d, label: d })),
 ];
 
+const APP_STATUS_COLOR: Record<string, string> = {
+  applied: "var(--rooman-blue)",
+  shortlisted: "var(--rooman-accent)",
+  hired: "var(--rooman-green)",
+  rejected: "#bdb8ad",
+};
+
 export function OpportunitiesPage() {
   const qc = useQueryClient();
   const toast = useToast();
   const [kind, setKind] = useState<"" | "hiring" | "seeking">("");
   const [domain, setDomain] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [myAppsOpen, setMyAppsOpen] = useState(false);
 
   const opps = useQuery({
     queryKey: ["opportunities", kind, domain],
     queryFn: () =>
       listOpportunities({ kind: kind || undefined, domain: domain || undefined }),
+  });
+  const myApps = useQuery({
+    queryKey: ["my-applications"],
+    queryFn: listMyApplications,
+    enabled: myAppsOpen,
   });
 
   const [form, setForm] = useState<CreateOpportunityPayload>({
@@ -54,7 +72,12 @@ export function OpportunitiesPage() {
     <div className="stack gap-6">
       <div className="row between wrap gap-2">
         <h1 className="page-title">Opportunities</h1>
-        <Button onClick={() => setModalOpen(true)}>+ Post an opportunity</Button>
+        <div className="row gap-2">
+          <Button variant="secondary" onClick={() => setMyAppsOpen(true)}>
+            My applications
+          </Button>
+          <Button onClick={() => setModalOpen(true)}>+ Post an opportunity</Button>
+        </div>
       </div>
 
       <Card surface="brutalist">
@@ -145,6 +168,45 @@ export function OpportunitiesPage() {
             {create.isPending ? "Posting…" : "Post opportunity"}
           </Button>
         </div>
+      </Modal>
+
+      <Modal
+        open={myAppsOpen}
+        onClose={() => setMyAppsOpen(false)}
+        title="My applications"
+      >
+        {myApps.isLoading ? (
+          <div className="cx-spinner" />
+        ) : !myApps.data?.length ? (
+          <p className="muted">
+            You haven't applied to anything yet. Apply from any hiring post.
+          </p>
+        ) : (
+          <div className="stack gap-3">
+            {myApps.data.map((a) => (
+              <Card key={a.id} surface="neu">
+                <div className="row between wrap gap-2" style={{ alignItems: "center" }}>
+                  <div className="stack">
+                    <strong>Application #{a.id}</strong>
+                    <span className="small muted">
+                      {a.referrer
+                        ? `Referred by ${a.referrer.full_name} · `
+                        : ""}
+                      {timeAgo(a.created_at)}
+                    </span>
+                  </div>
+                  <Badge
+                    color={APP_STATUS_COLOR[a.status] ?? "var(--surface-raised)"}
+                    style={{ color: a.status === "shortlisted" ? "var(--rooman-ink)" : "#fff" }}
+                  >
+                    {a.status}
+                  </Badge>
+                </div>
+                {a.note && <p className="small mt-2">{a.note}</p>}
+              </Card>
+            ))}
+          </div>
+        )}
       </Modal>
     </div>
   );

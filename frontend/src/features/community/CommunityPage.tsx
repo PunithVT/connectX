@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { Badge, Button, Card } from "@/components/ui";
@@ -45,14 +46,19 @@ export function CommunityPage() {
                 <Badge color="var(--surface-raised)">{c.member_count} members</Badge>
               </div>
               {c.description && <p className="small mt-2">{c.description}</p>}
-              <Button
-                block
-                className="mt-4"
-                onClick={() => join.mutate(c.id)}
-                disabled={join.isPending}
-              >
-                Join
-              </Button>
+              <div className="row gap-2 mt-4">
+                <Button
+                  onClick={() => join.mutate(c.id)}
+                  disabled={join.isPending}
+                >
+                  Join
+                </Button>
+                <Link to={`/community/${c.id}`} style={{ flex: 1 }}>
+                  <Button variant="secondary" block>
+                    Open feed →
+                  </Button>
+                </Link>
+              </div>
             </Card>
           ))}
         </div>
