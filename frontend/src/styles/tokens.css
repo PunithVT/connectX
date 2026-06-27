@@ -1,0 +1,27 @@
+/* Shared design tokens — consumed by all three style layers. */
+:root {
+  /* Brand */
+  --rooman-ink: #111111;
+  --rooman-paper: #f4f1ea;
+  --rooman-primary: #ff5c38;   /* Rooman orange */
+  --rooman-accent: #ffd23f;    /* yellow */
+  --rooman-blue: #2d6cdf;
+  --rooman-green: #18a558;
+
+  /* Surfaces */
+  --surface: #ece8e1;
+  --surface-raised: #f7f4ee;
+
+  /* Typography */
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  /* Spacing scale */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px;
+  --space-4: 16px; --space-6: 24px; --space-8: 32px;
+
+  /* Radii */
+  --radius-sharp: 0px;   /* brutalism */
+  --radius-soft: 18px;   /* neumorphism */
+  --radius-real: 8px;    /* skeuomorphism */
+}

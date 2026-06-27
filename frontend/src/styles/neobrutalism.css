@@ -1,0 +1,30 @@
+/* Neo-brutalism: thick borders, hard offset shadows, high contrast. */
+.nb-card {
+  background: var(--surface-raised);
+  border: 3px solid var(--rooman-ink);
+  border-radius: var(--radius-sharp);
+  box-shadow: 6px 6px 0 0 var(--rooman-ink);
+}
+
+.nb-btn {
+  font-family: var(--font-display);
+  font-weight: 700;
+  background: var(--rooman-primary);
+  color: #fff;
+  border: 3px solid var(--rooman-ink);
+  box-shadow: 4px 4px 0 0 var(--rooman-ink);
+  padding: var(--space-3) var(--space-6);
+  cursor: pointer;
+  transition: transform .05s ease, box-shadow .05s ease;
+}
+.nb-btn:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 0 var(--rooman-ink);
+}
+
+.nb-badge {
+  border: 2px solid var(--rooman-ink);
+  background: var(--rooman-accent);
+  padding: 2px var(--space-2);
+  font-weight: 700;
+}
