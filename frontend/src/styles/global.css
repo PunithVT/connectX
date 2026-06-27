@@ -1,0 +1,18 @@
+@import "./tokens.css";
+@import "./neobrutalism.css";
+@import "./neumorphism.css";
+@import "./skeuomorphism.css";
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; margin: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--rooman-paper);
+  color: var(--rooman-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}

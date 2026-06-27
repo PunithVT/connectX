@@ -1,0 +1,25 @@
+/* Skeuomorphism: real-world textures & bevels. Reserved for "moment" surfaces. */
+
+/* Profile ID card */
+.skeu-idcard {
+  border-radius: var(--radius-real);
+  background: linear-gradient(160deg, #fdfbf6 0%, #e9e3d6 100%);
+  border: 1px solid #c9c2b2;
+  box-shadow: 0 1px 0 #fff inset, 0 10px 24px rgba(0,0,0,.18);
+}
+
+/* Mentorship certificate */
+.skeu-certificate {
+  background:
+    repeating-linear-gradient(45deg, #faf6ec, #faf6ec 10px, #f5efe1 10px, #f5efe1 20px);
+  border: 8px double var(--rooman-accent);
+  box-shadow: 0 12px 28px rgba(0,0,0,.2);
+}
+
+/* StartupVarsity workbench panel (felt / wood feel) */
+.skeu-workbench {
+  background: linear-gradient(180deg, #8b5e3c 0%, #6f4828 100%);
+  border-radius: var(--radius-real);
+  box-shadow: 0 2px 0 rgba(255,255,255,.15) inset, 0 14px 30px rgba(0,0,0,.35);
+  color: #fdf3e3;
+}
