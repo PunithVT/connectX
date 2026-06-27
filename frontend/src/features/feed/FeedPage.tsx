@@ -9,7 +9,7 @@ export function FeedPage() {
 
   return (
     <div className="stack gap-6">
-      <h1 className="page-title">Your network</h1>
+      <h1 className="page-title">Feed</h1>
       <PostComposer />
 
       {feed.isLoading ? (

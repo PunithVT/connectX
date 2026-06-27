@@ -15,7 +15,8 @@ export function AppShell() {
         className="container grow"
         style={{
           display: "grid",
-          gridTemplateColumns: isWide ? "220px 1fr" : "1fr",
+          width: "100%",
+          gridTemplateColumns: isWide ? "220px minmax(0, 1fr)" : "1fr",
           gap: "var(--space-6)",
           padding: "var(--space-6) var(--space-4)",
           alignItems: "start",
