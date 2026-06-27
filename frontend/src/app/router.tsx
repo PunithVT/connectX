@@ -13,7 +13,13 @@ import { MentorshipHubPage } from "@/features/mentorship/MentorshipHubPage";
 import { BecomeMentorPage } from "@/features/mentorship/BecomeMentorPage";
 import { StartupVarsityPage } from "@/features/startupvarsity/StartupVarsityPage";
 import { CommunityPage } from "@/features/community/CommunityPage";
+import { CommunityDetailPage } from "@/features/community/CommunityDetailPage";
 import { NotificationsPage } from "@/features/notifications/NotificationsPage";
+import { DirectoryPage } from "@/features/directory/DirectoryPage";
+import { NetworkPage } from "@/features/network/NetworkPage";
+import { MessagesPage } from "@/features/messages/MessagesPage";
+import { EventsPage } from "@/features/events/EventsPage";
+import { SpotlightPage } from "@/features/spotlight/SpotlightPage";
 
 export function AppRouter() {
   return (
@@ -32,11 +38,18 @@ export function AppRouter() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/profile/edit" element={<ProfileEditPage />} />
         <Route path="/profile/:userId" element={<ProfilePage />} />
+        <Route path="/directory" element={<DirectoryPage />} />
+        <Route path="/network" element={<NetworkPage />} />
+        <Route path="/messages" element={<MessagesPage />} />
+        <Route path="/messages/:userId" element={<MessagesPage />} />
         <Route path="/opportunities" element={<OpportunitiesPage />} />
         <Route path="/mentorship" element={<MentorshipHubPage />} />
         <Route path="/mentorship/become" element={<BecomeMentorPage />} />
         <Route path="/startupvarsity" element={<StartupVarsityPage />} />
         <Route path="/community" element={<CommunityPage />} />
+        <Route path="/community/:communityId" element={<CommunityDetailPage />} />
+        <Route path="/events" element={<EventsPage />} />
+        <Route path="/spotlight" element={<SpotlightPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/admin/invites" element={<InviteAdminPage />} />
       </Route>
