@@ -123,7 +123,7 @@ export function InviteAcceptPage() {
                 </p>
               </div>
               <div className="nb-card" style={{ padding: 14 }}>
-                <strong>🚀 Build with StartupVarsity</strong>
+                <strong>📈 Build with StartupVarsity</strong>
                 <p className="small muted" style={{ margin: "4px 0 0" }}>
                   Develop your product using Rooman's resources and support.
                 </p>
@@ -249,7 +249,7 @@ export function InviteAcceptPage() {
                 ← Back
               </Button>
               <Button onClick={() => accept.mutate()} disabled={accept.isPending}>
-                {accept.isPending ? "Creating…" : "Finish & join 🎉"}
+                {accept.isPending ? "Creating…" : "Finish & join"}
               </Button>
             </div>
           </Card>

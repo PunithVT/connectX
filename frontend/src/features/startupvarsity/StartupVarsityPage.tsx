@@ -64,7 +64,7 @@ export function StartupVarsityPage() {
       </div>
 
       <Card surface="skeu-bench">
-        <strong>🚀 Build your product with Rooman's resources.</strong>
+        <strong>📈 Build your product with Rooman's resources.</strong>
         <p className="small muted" style={{ margin: "4px 0 0" }}>
           Alumni founders can apply for compute, mentorship, and lab access to develop
           their products under StartupVarsity. Pitch your idea and request what you need.

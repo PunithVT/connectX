@@ -29,7 +29,7 @@ function StoryCard({ story }: { story: Spotlight }) {
         </Badge>
       )}
       <div className="row gap-3" style={{ alignItems: "center" }}>
-        <span style={{ fontSize: 40 }}>{story.cover_emoji ?? "🌟"}</span>
+        <span style={{ fontSize: 40 }}>{story.cover_emoji ?? "🏆"}</span>
         <div className="stack">
           <strong style={{ fontFamily: "var(--font-display)", fontSize: 18 }}>
             {story.title}
@@ -61,7 +61,7 @@ const emptyForm: CreateSpotlightPayload = {
   title: "",
   story: "",
   program_trained: "",
-  cover_emoji: "🌟",
+  cover_emoji: "🏆",
 };
 
 export function SpotlightPage() {

@@ -24,7 +24,7 @@ class Event(Base):
     starts_at = Column(DateTime(timezone=True), nullable=False, index=True)
     ends_at = Column(DateTime(timezone=True))
     capacity = Column(Integer)  # optional cap; null = unlimited
-    cover_emoji = Column(String(8), default="🎉")
+    cover_emoji = Column(String(8), default="📅")
     status = Column(String(16), default="published", nullable=False)  # published | cancelled
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
