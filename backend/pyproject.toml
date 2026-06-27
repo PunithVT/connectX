@@ -1,0 +1,14 @@
+[project]
+name = "connectx-backend"
+version = "0.1.0"
+description = "Rooman Alumni Network — FastAPI backend"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 90
+target-version = "py311"
