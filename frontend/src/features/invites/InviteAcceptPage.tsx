@@ -111,19 +111,19 @@ export function InviteAcceptPage() {
             </p>
             <div className="stack gap-3 mt-4">
               <div className="nb-card" style={{ padding: 14 }}>
-                <strong>🤝 A community that has your back</strong>
+                <strong>A community that has your back</strong>
                 <p className="small muted" style={{ margin: "4px 0 0" }}>
                   Stay connected with fellow graduates and help each other grow.
                 </p>
               </div>
               <div className="nb-card" style={{ padding: 14 }}>
-                <strong>🎓 Get paid to mentor</strong>
+                <strong>Get paid to mentor</strong>
                 <p className="small muted" style={{ margin: "4px 0 0" }}>
                   Run mentorship sessions on Rooman programs at industry-standard rates.
                 </p>
               </div>
               <div className="nb-card" style={{ padding: 14 }}>
-                <strong>📈 Build with StartupVarsity</strong>
+                <strong>Build with StartupVarsity</strong>
                 <p className="small muted" style={{ margin: "4px 0 0" }}>
                   Develop your product using Rooman's resources and support.
                 </p>

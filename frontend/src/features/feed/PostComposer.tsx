@@ -7,9 +7,9 @@ import { createPost } from "@/api/feed.api";
 import type { PostType } from "@/types/models";
 
 const typeOptions: Array<{ value: PostType; label: string }> = [
-  { value: "update", label: "📢 Sharing an update" },
-  { value: "doing", label: "🛠️ What I'm working on" },
-  { value: "looking", label: "🔎 What I'm looking for" },
+  { value: "update", label: "Sharing an update" },
+  { value: "doing", label: "What I'm working on" },
+  { value: "looking", label: "What I'm looking for" },
 ];
 
 export function PostComposer() {

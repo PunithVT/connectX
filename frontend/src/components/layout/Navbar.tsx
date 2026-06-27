@@ -55,7 +55,7 @@ export function Navbar() {
 
         <div className="row gap-3">
           <Link to="/messages" className="nb-badge" style={{ position: "relative" }}>
-            💬
+            Messages
             {unreadMessages > 0 && (
               <span
                 style={{
@@ -80,7 +80,7 @@ export function Navbar() {
             )}
           </Link>
           <Link to="/notifications" className="nb-badge" style={{ position: "relative" }}>
-            🔔
+            Alerts
             {unread > 0 && (
               <span
                 style={{
