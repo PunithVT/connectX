@@ -50,7 +50,7 @@ def run() -> None:
                       description="Ask a Principal Engineer anything about breaking into DevOps.",
                       kind="ama", location="Online", meeting_url="https://meet.rooman.com/devops-ama",
                       starts_at=NOW + timedelta(days=3, hours=18 - NOW.hour),
-                      ends_at=NOW + timedelta(days=3, hours=19), capacity=200, cover_emoji="🎤"),
+                      ends_at=NOW + timedelta(days=3, hours=19), capacity=200, cover_emoji="🎓"),
                 Event(host_id=(recruiter or admin).id,
                       title="Rooman Alumni Hiring Meetup — Bengaluru",
                       description="Meet recruiters hiring across cloud, data and full-stack roles.",
@@ -62,7 +62,7 @@ def run() -> None:
                       description="Alumni founders pitch products built with Rooman resources.",
                       kind="launch", location="Online", meeting_url="https://meet.rooman.com/demo-day",
                       starts_at=NOW + timedelta(days=21, hours=16),
-                      ends_at=NOW + timedelta(days=21, hours=18), cover_emoji="🚀"),
+                      ends_at=NOW + timedelta(days=21, hours=18), cover_emoji="📈"),
             ]
             db.add_all(events)
             db.flush()
@@ -96,14 +96,14 @@ def run() -> None:
         if db.query(Spotlight).count() == 0:
             sp = []
             if mentor:
-                sp.append(Spotlight(user_id=mentor.id, is_featured=True, likes=42, cover_emoji="🌟",
+                sp.append(Spotlight(user_id=mentor.id, is_featured=True, likes=42, cover_emoji="🏆",
                     title="From Rooman classroom to Principal Engineer",
                     story="After the Rooman Cloud & DevOps program I joined Infosys as a junior "
                           "engineer. Twelve years later I lead a platform team and mentor the next "
                           "generation of Rooman alumni.",
                     program_trained="Rooman Cloud & DevOps"))
             if neha:
-                sp.append(Spotlight(user_id=neha.id, is_featured=True, likes=31, cover_emoji="💜",
+                sp.append(Spotlight(user_id=neha.id, is_featured=True, likes=31, cover_emoji="🎓",
                     title="Cracking a product company as a full-stack dev",
                     story="Rooman's full-stack track gave me the fundamentals to clear Razorpay's "
                           "interviews. Grateful to the community that reviewed my prep.",

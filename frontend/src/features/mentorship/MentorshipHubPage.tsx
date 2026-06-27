@@ -103,7 +103,7 @@ export function MentorshipHubPage() {
       </div>
 
       <Card surface="neu">
-        <strong>💡 Get paid to share what you know.</strong>
+        <strong>🎯 Get paid to share what you know.</strong>
         <p className="small muted" style={{ margin: "4px 0 0" }}>
           Rooman alumni run mentorship sessions on Rooman programs at industry-standard
           rates. Book a mentor below, or list yourself as one.

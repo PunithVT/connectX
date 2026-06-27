@@ -48,7 +48,7 @@ function EventCard({ event }: { event: AlumniEvent }) {
       toast.push(
         e.spots_left === 0 && !e.is_attending
           ? "Added to the waitlist."
-          : "You're going! 🎉",
+          : "You're going!",
         "success",
       );
     },
@@ -69,7 +69,7 @@ function EventCard({ event }: { event: AlumniEvent }) {
     <Card surface="brutalist">
       <div className="row between" style={{ alignItems: "flex-start" }}>
         <div className="row gap-3" style={{ alignItems: "center" }}>
-          <span style={{ fontSize: 34 }}>{event.cover_emoji ?? "🎉"}</span>
+          <span style={{ fontSize: 34 }}>{event.cover_emoji ?? "📅"}</span>
           <div className="stack">
             <strong style={{ fontFamily: "var(--font-display)", fontSize: 17 }}>
               {event.title}
@@ -133,7 +133,7 @@ const emptyForm: CreateEventPayload = {
   meeting_url: "",
   starts_at: "",
   capacity: null,
-  cover_emoji: "🎉",
+  cover_emoji: "📅",
 };
 
 export function EventsPage() {

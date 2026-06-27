@@ -13,7 +13,7 @@ class Spotlight(Base):
     title = Column(String(255), nullable=False)
     story = Column(Text, nullable=False)
     program_trained = Column(String(255))
-    cover_emoji = Column(String(8), default="🌟")
+    cover_emoji = Column(String(8), default="🏆")
     is_featured = Column(Boolean, default=False, nullable=False, index=True)
     likes = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)

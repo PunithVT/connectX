@@ -169,7 +169,7 @@ function ThreadView({ peerId }: { peerId: number }) {
           <div className="cx-spinner" />
         ) : !thread.data?.length ? (
           <p className="muted center" style={{ marginTop: 24 }}>
-            Say hello to {peerName} 👋
+            Say hello to {peerName} 💬
           </p>
         ) : (
           thread.data.map((m) => {
