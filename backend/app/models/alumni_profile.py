@@ -1,5 +1,14 @@
 """Alumni profile — captures current employment & expertise at registration."""
-from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime, func
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    func,
+)
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
@@ -23,10 +32,10 @@ class AlumniProfile(Base):
     location = Column(String(255))
     linkedin_url = Column(String(512))
 
-    # Network intent flags
-    open_to_mentoring = Column(String(8), default="no")     # paid mentorship
-    open_to_opportunities = Column(String(8), default="no") # seeking jobs
-    interested_in_startupvarsity = Column(String(8), default="no")
+    # Network intent flags (set during onboarding)
+    open_to_mentoring = Column(Boolean, default=False)       # paid mentorship
+    open_to_opportunities = Column(Boolean, default=False)   # seeking jobs
+    interested_in_startupvarsity = Column(Boolean, default=False)
 
     headline = Column(String(255))
     bio = Column(Text)

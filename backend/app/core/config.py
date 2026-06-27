@@ -1,5 +1,5 @@
 """Application settings, loaded from environment / .env."""
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -8,6 +8,8 @@ class Settings(BaseSettings):
 
     # Database
     DATABASE_URL: str = "postgresql+psycopg://connectx:connectx@localhost:5432/connectx"
+    # Auto-create tables on startup in dev (skip if you use Alembic exclusively)
+    AUTO_CREATE_TABLES: bool = True
 
     # Auth
     JWT_SECRET: str = "change-me"
@@ -19,6 +21,9 @@ class Settings(BaseSettings):
     INVITE_TOKEN_EXPIRE_HOURS: int = 168  # 7 days
     SMTP_HOST: str = "localhost"
     SMTP_PORT: int = 1025
+    SMTP_USER: str | None = None
+    SMTP_PASSWORD: str | None = None
+    SMTP_STARTTLS: bool = False
     EMAIL_FROM: str = "alumni@rooman.com"
     FRONTEND_BASE_URL: str = "http://localhost:5173"
 
@@ -27,8 +32,9 @@ class Settings(BaseSettings):
 
     CORS_ORIGINS: list[str] = ["http://localhost:5173"]
 
-    class Config:
-        env_file = ".env"
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+    )
 
 
 settings = Settings()
