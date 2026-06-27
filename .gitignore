@@ -19,6 +19,7 @@ frontend/.vite/
 .vscode/
 .idea/
 .DS_Store
+roo-connect-hub-main/
 
 # Logs
 *.log
