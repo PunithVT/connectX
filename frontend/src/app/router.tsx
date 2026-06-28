@@ -5,7 +5,10 @@ import { ProtectedRoute } from "@/features/auth/ProtectedRoute";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { InviteAcceptPage } from "@/features/invites/InviteAcceptPage";
 import { InviteAdminPage } from "@/features/invites/InviteAdminPage";
+import { LandingPage } from "@/features/landing/LandingPage";
+import { DashboardPage } from "@/features/dashboard/DashboardPage";
 import { FeedPage } from "@/features/feed/FeedPage";
+import { DirectoryPage } from "@/features/directory/DirectoryPage";
 import { ProfilePage } from "@/features/profile/ProfilePage";
 import { ProfileEditPage } from "@/features/profile/ProfileEditPage";
 import { OpportunitiesPage } from "@/features/opportunities/OpportunitiesPage";
@@ -15,7 +18,6 @@ import { StartupVarsityPage } from "@/features/startupvarsity/StartupVarsityPage
 import { CommunityPage } from "@/features/community/CommunityPage";
 import { CommunityDetailPage } from "@/features/community/CommunityDetailPage";
 import { NotificationsPage } from "@/features/notifications/NotificationsPage";
-import { DirectoryPage } from "@/features/directory/DirectoryPage";
 import { NetworkPage } from "@/features/network/NetworkPage";
 import { MessagesPage } from "@/features/messages/MessagesPage";
 import { EventsPage } from "@/features/events/EventsPage";
@@ -24,9 +26,12 @@ import { SpotlightPage } from "@/features/spotlight/SpotlightPage";
 export function AppRouter() {
   return (
     <Routes>
+      {/* Public */}
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/invite/:token" element={<InviteAcceptPage />} />
 
+      {/* Protected — wrapped in AppShell layout */}
       <Route
         element={
           <ProtectedRoute>
@@ -34,11 +39,12 @@ export function AppRouter() {
           </ProtectedRoute>
         }
       >
-        <Route path="/" element={<FeedPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/feed" element={<FeedPage />} />
+        <Route path="/directory" element={<DirectoryPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/profile/edit" element={<ProfileEditPage />} />
         <Route path="/profile/:userId" element={<ProfilePage />} />
-        <Route path="/directory" element={<DirectoryPage />} />
         <Route path="/network" element={<NetworkPage />} />
         <Route path="/messages" element={<MessagesPage />} />
         <Route path="/messages/:userId" element={<MessagesPage />} />

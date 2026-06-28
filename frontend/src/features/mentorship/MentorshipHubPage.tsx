@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { MentorCard } from "@/components/roo/MentorCard";
 import { Avatar, Badge, Button, Card, Input, Modal, Select, Tabs, Textarea } from "@/components/ui";
 import { useToast } from "@/components/ui/Toast";
 import {
@@ -93,91 +94,98 @@ export function MentorshipHubPage() {
     onError: () => toast.push("Could not book the session.", "error"),
   });
 
+  const openBooking = (mentorId: number) => {
+    const mentor = mentors.data?.find((m) => m.id === mentorId);
+    if (mentor) setActive(mentor);
+  };
+
   return (
-    <div className="stack gap-6">
-      <div className="row between wrap gap-2">
-        <h1 className="page-title">Mentorship</h1>
-        <Link to="/mentorship/become">
-          <Button variant="secondary">Become a mentor</Button>
-        </Link>
+    <section className="mx-auto max-w-7xl px-6 py-12">
+      <div className="grid gap-8 md:grid-cols-[1fr_2fr]">
+        <div>
+          <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            Mentorship
+          </div>
+          <h1 className="mt-2 display text-4xl leading-tight md:text-5xl">
+            Learn from alumni who've{" "}
+            <span className="italic text-accent">already</span> done it.
+          </h1>
+        </div>
+        <div className="md:pt-4">
+          <p className="text-muted-foreground">
+            Book 1:1 sessions with senior Rooman alumni working at top product companies.
+            All mentors are vetted by the community — and pricing stays transparent.
+          </p>
+          <Link
+            to="/mentorship/become"
+            className="mt-4 inline-block text-sm text-accent hover:underline"
+          >
+            Become a mentor →
+          </Link>
+        </div>
       </div>
 
-      <Card surface="neu">
-        <strong>Get paid to share what you know.</strong>
-        <p className="small muted" style={{ margin: "4px 0 0" }}>
+      <div className="mt-8 rounded-2xl border border-border bg-card p-5">
+        <strong className="text-foreground">Get paid to share what you know.</strong>
+        <p className="mt-1 text-sm text-muted-foreground">
           Rooman alumni run mentorship sessions on Rooman programs at industry-standard
           rates. Book a mentor below, or list yourself as one.
         </p>
-      </Card>
+      </div>
 
-      <Tabs
-        tabs={[
-          { key: "mentors", label: "Find a mentor" },
-          { key: "sessions", label: "My sessions" },
-          { key: "leaderboard", label: "Top mentors" },
-        ]}
-        active={tab}
-        onChange={(k) => setTab(k as "mentors" | "sessions" | "leaderboard")}
-      />
+      <div className="mt-4">
+        <Tabs
+          tabs={[
+            { key: "mentors", label: "Find a mentor" },
+            { key: "sessions", label: "My sessions" },
+            { key: "leaderboard", label: "Top mentors" },
+          ]}
+          active={tab}
+          onChange={(k) => setTab(k as "mentors" | "sessions" | "leaderboard")}
+        />
+      </div>
 
       {tab === "mentors" &&
         (mentors.isLoading ? (
-          <div className="cx-spinner" />
-        ) : !mentors.data?.length ? (
-          <p className="muted">No mentors are listed yet.</p>
+          <div className="mt-20 text-center text-muted-foreground">Loading mentors…</div>
         ) : (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-              gap: "var(--space-4)",
-            }}
-          >
-            {mentors.data.map((m) => (
-              <Card key={m.id} surface="brutalist">
-                <div className="row gap-3" style={{ alignItems: "center" }}>
-                  <Avatar name={m.user?.full_name} size={48} />
-                  <div className="stack">
-                    <strong>{m.user?.full_name ?? "Mentor"}</strong>
-                    <span className="small muted">{m.headline ?? "Rooman mentor"}</span>
-                  </div>
-                </div>
-                {m.programs && (
-                  <div className="row wrap gap-2 mt-4">
-                    {m.programs.split(",").map((p) => (
-                      <Badge key={p} color="var(--surface-raised)">
-                        {p.trim()}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-                {m.bio && <p className="small mt-2">{m.bio}</p>}
-                <div className="row between mt-4">
-                  <strong>{rupees(m.hourly_rate)}/hr</strong>
-                  <Button onClick={() => setActive(m)}>Book</Button>
-                </div>
-              </Card>
+          <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {mentors.data?.map((m) => (
+              <MentorCard key={m.id} mentor={m} onBook={openBooking} />
             ))}
+            {!mentors.data?.length && (
+              <p className="col-span-3 text-center text-muted-foreground">
+                No mentors listed yet.{" "}
+                <Link to="/mentorship/become" className="text-accent underline">
+                  Be the first →
+                </Link>
+              </p>
+            )}
           </div>
         ))}
 
       {tab === "sessions" &&
         (sessions.isLoading ? (
-          <div className="cx-spinner" />
+          <div className="mt-20 text-center text-muted-foreground">Loading sessions…</div>
         ) : !sessions.data?.length ? (
-          <p className="muted">You have no sessions yet.</p>
+          <p className="mt-12 text-center text-muted-foreground">You have no sessions yet.</p>
         ) : (
-          <div className="stack gap-3">
+          <div className="mt-12 grid gap-4">
             {sessions.data.map((s) => (
-              <Card key={s.id} surface="brutalist">
-                <div className="row between wrap gap-2">
-                  <div className="stack">
-                    <strong>{s.program ?? "Mentorship session"}</strong>
-                    <span className="small muted">
+              <div
+                key={s.id}
+                className="rounded-2xl border border-border bg-card p-5"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <h3 className="display text-lg leading-tight">
+                      {s.program ?? "Mentorship session"}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
                       {new Date(s.scheduled_at).toLocaleString()} · {s.duration_minutes} min
-                    </span>
+                    </p>
                   </div>
-                  <div className="row gap-2">
+                  <div className="flex items-center gap-2">
                     <Badge color="var(--rooman-blue)" style={{ color: "#fff" }}>
                       {s.status}
                     </Badge>
@@ -190,7 +198,7 @@ export function MentorshipHubPage() {
                   </div>
                 </div>
                 {s.status !== "completed" && s.status !== "cancelled" && (
-                  <div className="row mt-4" style={{ justifyContent: "flex-end" }}>
+                  <div className="mt-4 flex justify-end">
                     <Button
                       variant="secondary"
                       onClick={() => complete.mutate(s.id)}
@@ -201,29 +209,33 @@ export function MentorshipHubPage() {
                   </div>
                 )}
                 {s.status === "completed" && (
-                  <div className="row between mt-4" style={{ alignItems: "center" }}>
+                  <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
                     {s.reviewed ? (
-                      <span className="small muted">You reviewed this session. ✓</span>
+                      <span className="text-sm text-muted-foreground">
+                        You reviewed this session. ✓
+                      </span>
                     ) : (
-                      <span className="small muted">How did it go?</span>
+                      <span className="text-sm text-muted-foreground">How did it go?</span>
                     )}
                     {!s.reviewed && (
                       <Button onClick={() => setReviewing(s)}>Leave a review</Button>
                     )}
                   </div>
                 )}
-              </Card>
+              </div>
             ))}
           </div>
         ))}
 
       {tab === "leaderboard" &&
         (leaderboard.isLoading ? (
-          <div className="cx-spinner" />
+          <div className="mt-20 text-center text-muted-foreground">Loading leaderboard…</div>
         ) : !leaderboard.data?.length ? (
-          <p className="muted">No ranked mentors yet — reviews will populate this board.</p>
+          <p className="mt-12 text-center text-muted-foreground">
+            No ranked mentors yet — reviews will populate this board.
+          </p>
         ) : (
-          <div className="stack gap-3">
+          <div className="mt-12 grid gap-4">
             {leaderboard.data.map((e, i) => (
               <Card key={e.mentor_id} surface={i === 0 ? "neu" : "brutalist"}>
                 <div className="row between wrap gap-3" style={{ alignItems: "center" }}>
@@ -345,6 +357,6 @@ export function MentorshipHubPage() {
           </Button>
         </div>
       </Modal>
-    </div>
+    </section>
   );
 }

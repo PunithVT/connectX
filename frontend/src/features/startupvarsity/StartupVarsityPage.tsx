@@ -1,151 +1,159 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-import { Avatar, Badge, Button, Card, Input, Modal, Select, Textarea } from "@/components/ui";
-import { useToast } from "@/components/ui/Toast";
-import { applyForResources, listProjects } from "@/api/startupvarsity.api";
-import { timeAgo } from "@/lib/format";
-import type { StartupApplyPayload } from "@/types/api";
-
-const stageOptions = [
-  { value: "idea", label: "Idea" },
-  { value: "prototype", label: "Prototype" },
-  { value: "mvp", label: "MVP" },
-  { value: "revenue", label: "Revenue" },
-  { value: "scaling", label: "Scaling" },
-];
-
-// Matches backend StartupProject.status vocabulary.
-const statusColor: Record<string, string> = {
-  submitted: "var(--rooman-accent)",
-  under_review: "var(--rooman-blue)",
-  approved: "var(--rooman-green)",
-  rejected: "#bdb8ad",
-};
-
-const statusLabel: Record<string, string> = {
-  submitted: "submitted",
-  under_review: "under review",
-  approved: "approved",
-  rejected: "rejected",
-};
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { StartupCard } from "@/components/roo/StartupCard";
+import { listProjects, applyForResources } from "@/api/startupvarsity.api";
 
 export function StartupVarsityPage() {
-  const qc = useQueryClient();
-  const toast = useToast();
-  const [open, setOpen] = useState(false);
-
-  const projects = useQuery({ queryKey: ["startup-projects"], queryFn: listProjects });
-
-  const [form, setForm] = useState<StartupApplyPayload>({
+  const queryClient = useQueryClient();
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({
     name: "",
     pitch: "",
-    stage: "idea",
+    stage: "idea" as "idea" | "prototype" | "mvp" | "revenue",
     resources_requested: "",
   });
-  const set = <K extends keyof StartupApplyPayload>(k: K, v: StartupApplyPayload[K]) =>
-    setForm((f) => ({ ...f, [k]: v }));
 
-  const apply = useMutation({
-    mutationFn: () => applyForResources(form),
+  const { data: projects = [], isLoading } = useQuery({
+    queryKey: ["startupvarsity"],
+    queryFn: listProjects,
+    staleTime: 60_000,
+  });
+
+  const applyMutation = useMutation({
+    mutationFn: applyForResources,
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["startup-projects"] });
-      setOpen(false);
-      toast.push("Application submitted to StartupVarsity!", "success");
+      queryClient.invalidateQueries({ queryKey: ["startupvarsity"] });
+      setShowForm(false);
+      setForm({ name: "", pitch: "", stage: "idea", resources_requested: "" });
     },
-    onError: () => toast.push("Could not submit application.", "error"),
   });
 
   return (
-    <div className="stack gap-6">
-      <div className="row between wrap gap-2">
-        <h1 className="page-title">StartupVarsity</h1>
-        <Button onClick={() => setOpen(true)}>+ Apply for resources</Button>
+    <section className="mx-auto max-w-7xl px-6 py-12">
+      <div className="flex items-end justify-between gap-6">
+        <div>
+          <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            Startup Hub
+          </div>
+          <h1 className="mt-2 display text-4xl leading-tight md:text-5xl">
+            Build the next one
+            <br />
+            with your <span className="italic text-accent">batch</span>.
+          </h1>
+        </div>
+        <div className="flex flex-col items-end gap-2">
+          <div className="hidden text-right text-sm text-muted-foreground md:block">
+            Powered by{" "}
+            <span className="font-medium text-foreground">StartupVarsity</span>
+          </div>
+          <button
+            onClick={() => setShowForm((v) => !v)}
+            className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background"
+          >
+            {showForm ? "Cancel" : "List your startup →"}
+          </button>
+        </div>
       </div>
 
-      <Card surface="skeu-bench">
-        <strong>Build your product with Rooman's resources.</strong>
-        <p className="small" style={{ margin: "6px 0 0", color: "#fdf3e3", opacity: 0.9 }}>
+      <div className="mt-8 rounded-3xl border border-border bg-card p-6">
+        <strong className="display text-lg">
+          Build your product with Rooman's resources.
+        </strong>
+        <p className="mt-1 text-sm text-muted-foreground">
           Alumni founders can apply for compute, mentorship, and lab access to develop
           their products under StartupVarsity. Pitch your idea and request what you need.
         </p>
-      </Card>
+      </div>
 
-      {projects.isLoading ? (
-        <div className="cx-spinner" />
-      ) : !projects.data?.length ? (
-        <p className="muted">No projects yet — be the first to apply!</p>
-      ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-            gap: "var(--space-4)",
+      {showForm && (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            applyMutation.mutate(form);
           }}
+          className="mt-8 rounded-3xl border border-border bg-card p-6"
         >
-          {projects.data.map((p) => (
-            <Card key={p.id} surface="brutalist">
-              <div className="row between wrap gap-2">
-                <Badge>{p.stage}</Badge>
-                <Badge color={statusColor[p.status] ?? "var(--rooman-accent)"}>
-                  {statusLabel[p.status] ?? p.status}
-                </Badge>
-              </div>
-              <h3 style={{ margin: "10px 0 4px" }}>{p.name}</h3>
-              {p.pitch && <p className="small">{p.pitch}</p>}
-              {p.resources_requested && (
-                <p className="small muted" style={{ marginTop: 8 }}>
-                  Needs: {p.resources_requested}
-                </p>
-              )}
-              <div className="row gap-2 mt-4" style={{ alignItems: "center" }}>
-                <Avatar name={p.owner?.full_name} size={26} />
-                <span className="small">{p.owner?.full_name ?? "Founder"}</span>
-                <span className="small muted" style={{ marginLeft: "auto" }}>
-                  {timeAgo(p.created_at)}
-                </span>
-              </div>
-            </Card>
-          ))}
-        </div>
+          <h2 className="display text-2xl">List your startup</h2>
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="text-xs uppercase tracking-widest text-muted-foreground">
+                Startup name *
+              </label>
+              <input
+                required
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-accent"
+              />
+            </div>
+            <div>
+              <label className="text-xs uppercase tracking-widest text-muted-foreground">
+                Stage
+              </label>
+              <select
+                value={form.stage}
+                onChange={(e) =>
+                  setForm({ ...form, stage: e.target.value as typeof form.stage })
+                }
+                className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-accent"
+              >
+                <option value="idea">Idea</option>
+                <option value="prototype">Prototype</option>
+                <option value="mvp">MVP</option>
+                <option value="revenue">Revenue</option>
+              </select>
+            </div>
+            <div className="md:col-span-2">
+              <label className="text-xs uppercase tracking-widest text-muted-foreground">
+                Pitch
+              </label>
+              <textarea
+                rows={3}
+                value={form.pitch}
+                onChange={(e) => setForm({ ...form, pitch: e.target.value })}
+                className="mt-1 w-full resize-none rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-accent"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="text-xs uppercase tracking-widest text-muted-foreground">
+                What are you looking for?
+              </label>
+              <input
+                value={form.resources_requested}
+                onChange={(e) =>
+                  setForm({ ...form, resources_requested: e.target.value })
+                }
+                placeholder="e.g. Co-founder (CTO), Seed funding, Design help"
+                className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-accent"
+              />
+            </div>
+          </div>
+          <div className="mt-4 flex justify-end">
+            <button
+              type="submit"
+              disabled={applyMutation.isPending || !form.name}
+              className="rounded-full bg-foreground px-6 py-2.5 text-sm font-medium text-background disabled:opacity-50"
+            >
+              {applyMutation.isPending ? "Submitting…" : "Submit startup"}
+            </button>
+          </div>
+        </form>
       )}
 
-      <Modal open={open} onClose={() => setOpen(false)} title="Apply to StartupVarsity">
-        <div className="stack gap-3">
-          <Input
-            label="Project / startup name"
-            value={form.name}
-            onChange={(e) => set("name", e.target.value)}
-          />
-          <Textarea
-            label="Pitch"
-            value={form.pitch ?? ""}
-            onChange={(e) => set("pitch", e.target.value)}
-            rows={3}
-            placeholder="What are you building and for whom?"
-          />
-          <Select
-            label="Stage"
-            options={stageOptions}
-            value={form.stage}
-            onChange={(e) => set("stage", e.target.value)}
-          />
-          <Textarea
-            label="Resources requested"
-            value={form.resources_requested ?? ""}
-            onChange={(e) => set("resources_requested", e.target.value)}
-            rows={2}
-            placeholder="e.g. GPU compute, mentor for go-to-market, lab space"
-          />
-          <Button
-            block
-            onClick={() => form.name.trim() && apply.mutate()}
-            disabled={apply.isPending || !form.name.trim()}
-          >
-            {apply.isPending ? "Submitting…" : "Submit application"}
-          </Button>
+      {isLoading ? (
+        <div className="mt-20 text-center text-muted-foreground">Loading startups…</div>
+      ) : (
+        <div className="mt-12 grid gap-4 md:grid-cols-2">
+          {projects.map((p) => (
+            <StartupCard key={p.id} project={p} />
+          ))}
+          {projects.length === 0 && (
+            <p className="col-span-2 text-center text-muted-foreground">
+              No startup projects yet. List yours above!
+            </p>
+          )}
         </div>
-      </Modal>
-    </div>
+      )}
+    </section>
   );
 }
