@@ -1,37 +1,26 @@
 import { Outlet } from "react-router-dom";
-
 import { Navbar } from "./Navbar";
 import { Sidebar } from "./Sidebar";
-import { Footer } from "./Footer";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 export function AppShell() {
   const isWide = useMediaQuery("(min-width: 880px)");
 
   return (
-    <div className="stack" style={{ minHeight: "100%" }}>
+    <div className="flex min-h-screen flex-col bg-background">
       <Navbar />
-      <main
-        className="container grow"
-        style={{
-          display: "grid",
-          width: "100%",
-          gridTemplateColumns: isWide ? "220px minmax(0, 1fr)" : "1fr",
-          gap: "var(--space-6)",
-          padding: "var(--space-6) var(--space-4)",
-          alignItems: "start",
-        }}
-      >
+      <div className="mx-auto flex w-full max-w-7xl flex-1 gap-8 px-4 py-6">
         {isWide && (
-          <div style={{ position: "sticky", top: 84 }}>
-            <Sidebar />
-          </div>
+          <aside className="w-52 shrink-0">
+            <div className="sticky top-20">
+              <Sidebar />
+            </div>
+          </aside>
         )}
-        <div style={{ minWidth: 0 }}>
+        <main className="min-w-0 flex-1">
           <Outlet />
-        </div>
-      </main>
-      <Footer />
+        </main>
+      </div>
     </div>
   );
 }

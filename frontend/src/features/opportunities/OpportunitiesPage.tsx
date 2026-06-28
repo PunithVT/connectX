@@ -1,22 +1,26 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { Badge, Button, Card, Input, Modal, Select, Tabs, Textarea } from "@/components/ui";
-import { useToast } from "@/components/ui/Toast";
+import { Badge, Card, Modal } from "@/components/ui";
 import { OpportunityCard } from "./OpportunityCard";
 import {
   createOpportunity,
   listMyApplications,
   listOpportunities,
 } from "@/api/opportunities.api";
-import { EXPERTISE_DOMAINS } from "@/lib/validators";
-import { timeAgo } from "@/lib/format";
+import { timeAgo } from "@/lib/roo-utils";
 import type { CreateOpportunityPayload } from "@/types/api";
 
-const domainOptions = [
-  { value: "", label: "All domains" },
-  ...EXPERTISE_DOMAINS.map((d) => ({ value: d, label: d })),
-];
+type KindFilter = "" | "hiring" | "seeking";
+
+const INITIAL_FORM: CreateOpportunityPayload = {
+  kind: "hiring",
+  title: "",
+  description: "",
+  expertise_domain: "",
+  location: "",
+  company: "",
+};
 
 const APP_STATUS_COLOR: Record<string, string> = {
   applied: "var(--rooman-blue)",
@@ -27,149 +31,245 @@ const APP_STATUS_COLOR: Record<string, string> = {
 
 export function OpportunitiesPage() {
   const qc = useQueryClient();
-  const toast = useToast();
-  const [kind, setKind] = useState<"" | "hiring" | "seeking">("");
+  const [kindFilter, setKindFilter] = useState<KindFilter>("");
   const [domain, setDomain] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [myAppsOpen, setMyAppsOpen] = useState(false);
+  const [form, setForm] = useState<CreateOpportunityPayload>(INITIAL_FORM);
+  const [error, setError] = useState("");
 
-  const opps = useQuery({
-    queryKey: ["opportunities", kind, domain],
+  const set = <K extends keyof CreateOpportunityPayload>(
+    k: K,
+    v: CreateOpportunityPayload[K],
+  ) => setForm((f) => ({ ...f, [k]: v }));
+
+  const { data: opps, isLoading } = useQuery({
+    queryKey: ["opportunities", kindFilter, domain],
     queryFn: () =>
-      listOpportunities({ kind: kind || undefined, domain: domain || undefined }),
+      listOpportunities({
+        kind: kindFilter || undefined,
+        domain: domain || undefined,
+      }),
   });
+
   const myApps = useQuery({
     queryKey: ["my-applications"],
     queryFn: listMyApplications,
     enabled: myAppsOpen,
   });
 
-  const [form, setForm] = useState<CreateOpportunityPayload>({
-    kind: "hiring",
-    title: "",
-    description: "",
-    expertise_domain: EXPERTISE_DOMAINS[0],
-    location: "",
-    company: "",
-  });
-  const set = <K extends keyof CreateOpportunityPayload>(
-    k: K,
-    v: CreateOpportunityPayload[K],
-  ) => setForm((f) => ({ ...f, [k]: v }));
-
   const create = useMutation({
     mutationFn: () => createOpportunity(form),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["opportunities"] });
-      setModalOpen(false);
-      setForm({ ...form, title: "", description: "" });
-      toast.push("Posted! We'll notify matching alumni.", "success");
+      setShowForm(false);
+      setForm(INITIAL_FORM);
+      setError("");
     },
-    onError: () => toast.push("Could not post opportunity.", "error"),
+    onError: () => setError("Could not post opportunity. Please try again."),
   });
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.title.trim()) {
+      setError("Title is required.");
+      return;
+    }
+    setError("");
+    create.mutate();
+  };
+
+  const filterTabs: { key: KindFilter; label: string }[] = [
+    { key: "", label: "All" },
+    { key: "hiring", label: "Hiring" },
+    { key: "seeking", label: "Seeking" },
+  ];
+
   return (
-    <div className="stack gap-6">
-      <div className="row between wrap gap-2">
-        <h1 className="page-title">Opportunities</h1>
-        <div className="row gap-2">
-          <Button variant="secondary" onClick={() => setMyAppsOpen(true)}>
+    <div className="mx-auto max-w-5xl px-4 py-10 space-y-10">
+      {/* Page header */}
+      <div className="space-y-2">
+        <p className="chip text-xs tracking-widest uppercase">Opportunities</p>
+        <h1 className="display text-4xl md:text-5xl text-foreground leading-tight">
+          Hiring &amp; Seeking —<br className="hidden sm:block" /> in the open.
+        </h1>
+      </div>
+
+      {/* Controls row */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        {/* Filter tabs */}
+        <div className="flex gap-2">
+          {filterTabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setKindFilter(tab.key)}
+              className={[
+                "chip cursor-pointer transition-colors",
+                kindFilter === tab.key
+                  ? "border-foreground bg-foreground text-background"
+                  : "hover:border-foreground/40",
+              ].join(" ")}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Domain filter + actions */}
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            type="text"
+            value={domain}
+            onChange={(e) => setDomain(e.target.value)}
+            placeholder="Filter by domain…"
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/40"
+          />
+          <button
+            onClick={() => setMyAppsOpen(true)}
+            className="chip cursor-pointer transition-colors hover:border-foreground/40"
+          >
             My applications
-          </Button>
-          <Button onClick={() => setModalOpen(true)}>+ Post an opportunity</Button>
+          </button>
+          <button
+            onClick={() => setShowForm((v) => !v)}
+            className="chip border-accent/60 text-accent hover:bg-accent/10 transition-colors cursor-pointer"
+          >
+            {showForm ? "Cancel" : "+ Post an opportunity"}
+          </button>
         </div>
       </div>
 
-      <Card surface="brutalist">
-        <div className="row between wrap gap-3">
-          <Tabs
-            tabs={[
-              { key: "", label: "All" },
-              { key: "hiring", label: "Hiring" },
-              { key: "seeking", label: "Seeking" },
-            ]}
-            active={kind}
-            onChange={(k) => setKind(k as typeof kind)}
-          />
-          <div style={{ minWidth: 200 }}>
-            <Select
-              options={domainOptions}
-              value={domain}
-              onChange={(e) => setDomain(e.target.value)}
+      {/* Inline form */}
+      {showForm && (
+        <form
+          onSubmit={handleSubmit}
+          className="rounded-2xl border border-border bg-card p-6 space-y-4"
+        >
+          <h2 className="display text-2xl text-foreground">Post an opportunity</h2>
+
+          {/* Kind select */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              Type
+            </label>
+            <select
+              value={form.kind}
+              onChange={(e) => set("kind", e.target.value as "hiring" | "seeking")}
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/40"
+            >
+              <option value="hiring">I'm hiring / have an opening</option>
+              <option value="seeking">I'm looking for a role</option>
+            </select>
+          </div>
+
+          {/* Title */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              Title <span className="text-accent">*</span>
+            </label>
+            <input
+              type="text"
+              value={form.title}
+              onChange={(e) => set("title", e.target.value)}
+              placeholder={
+                form.kind === "hiring" ? "Senior DevOps Engineer" : "Seeking Cloud role"
+              }
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/40"
             />
           </div>
-        </div>
-      </Card>
 
-      {opps.isLoading ? (
-        <div className="cx-spinner" />
-      ) : !opps.data?.length ? (
-        <p className="muted">No opportunities here yet.</p>
+          {/* Description */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              Description
+            </label>
+            <textarea
+              value={form.description ?? ""}
+              onChange={(e) => set("description", e.target.value)}
+              rows={3}
+              placeholder="Add context, requirements, or what you're looking for…"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/40 resize-none"
+            />
+          </div>
+
+          {/* Expertise domain */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              Expertise domain
+            </label>
+            <input
+              type="text"
+              value={form.expertise_domain ?? ""}
+              onChange={(e) => set("expertise_domain", e.target.value)}
+              placeholder="e.g. Cloud, DevOps, Data Science"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/40"
+            />
+          </div>
+
+          {/* Company + Location */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                Company
+              </label>
+              <input
+                type="text"
+                value={form.company ?? ""}
+                onChange={(e) => set("company", e.target.value)}
+                placeholder="Acme Corp"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/40"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                Location
+              </label>
+              <input
+                type="text"
+                value={form.location ?? ""}
+                onChange={(e) => set("location", e.target.value)}
+                placeholder="Bangalore / Remote"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/40"
+              />
+            </div>
+          </div>
+
+          {/* Error */}
+          {error && (
+            <p className="text-sm text-accent">{error}</p>
+          )}
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={create.isPending || !form.title.trim()}
+            className="w-full rounded-xl border border-foreground bg-foreground text-background py-2.5 text-sm font-medium transition-opacity disabled:opacity-50 cursor-pointer hover:opacity-90"
+          >
+            {create.isPending ? "Posting…" : "Post opportunity"}
+          </button>
+        </form>
+      )}
+
+      {/* Cards grid */}
+      {isLoading ? (
+        <div className="flex justify-center py-16">
+          <div className="cx-spinner" />
+        </div>
+      ) : !opps?.length ? (
+        <div className="flex justify-center py-20">
+          <p className="text-muted-foreground text-sm">
+            No opportunities here yet. Be the first to post one.
+          </p>
+        </div>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-            gap: "var(--space-4)",
-          }}
-        >
-          {opps.data.map((o) => (
-            <OpportunityCard key={o.id} opp={o} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {opps.map((opp) => (
+            <OpportunityCard key={opp.id} opp={opp} />
           ))}
         </div>
       )}
 
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title="Post an opportunity">
-        <div className="stack gap-3">
-          <Select
-            label="Type"
-            options={[
-              { value: "hiring", label: "I'm hiring / have an opening" },
-              { value: "seeking", label: "I'm looking for a role" },
-            ]}
-            value={form.kind}
-            onChange={(e) => set("kind", e.target.value as "hiring" | "seeking")}
-          />
-          <Input
-            label="Title"
-            value={form.title}
-            onChange={(e) => set("title", e.target.value)}
-            placeholder={form.kind === "hiring" ? "Senior DevOps Engineer" : "Seeking Cloud role"}
-          />
-          <Textarea
-            label="Description"
-            value={form.description ?? ""}
-            onChange={(e) => set("description", e.target.value)}
-            rows={3}
-          />
-          <Select
-            label="Expertise domain"
-            options={EXPERTISE_DOMAINS.map((d) => ({ value: d, label: d }))}
-            value={form.expertise_domain}
-            onChange={(e) => set("expertise_domain", e.target.value)}
-          />
-          <div className="row gap-3 wrap">
-            <Input
-              label="Company"
-              value={form.company ?? ""}
-              onChange={(e) => set("company", e.target.value)}
-            />
-            <Input
-              label="Location"
-              value={form.location ?? ""}
-              onChange={(e) => set("location", e.target.value)}
-            />
-          </div>
-          <Button
-            block
-            onClick={() => form.title.trim() && create.mutate()}
-            disabled={create.isPending || !form.title.trim()}
-          >
-            {create.isPending ? "Posting…" : "Post opportunity"}
-          </Button>
-        </div>
-      </Modal>
-
+      {/* My applications modal */}
       <Modal
         open={myAppsOpen}
         onClose={() => setMyAppsOpen(false)}

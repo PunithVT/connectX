@@ -1,44 +1,39 @@
 import { NavLink } from "react-router-dom";
-
 import { useCurrentUser } from "@/features/auth/useAuth";
 
 const links = [
-  { to: "/", label: "Feed", end: true },
-  { to: "/directory", label: "Discover" },
-  { to: "/network", label: "My Network" },
-  { to: "/messages", label: "Messages" },
-  { to: "/opportunities", label: "Opportunities" },
-  { to: "/mentorship", label: "Mentorship" },
-  { to: "/events", label: "Events" },
-  { to: "/startupvarsity", label: "StartupVarsity" },
-  { to: "/community", label: "Community" },
-  { to: "/spotlight", label: "Spotlight" },
-  { to: "/profile", label: "My Profile" },
+  { to: "/dashboard", label: "Dashboard", icon: "⌂" },
+  { to: "/feed", label: "Feed", icon: "✍" },
+  { to: "/directory", label: "Directory", icon: "⌕" },
+  { to: "/network", label: "My Network", icon: "⇄" },
+  { to: "/messages", label: "Messages", icon: "✉" },
+  { to: "/opportunities", label: "Opportunities", icon: "▦" },
+  { to: "/mentorship", label: "Mentorship", icon: "◈" },
+  { to: "/events", label: "Events", icon: "▤" },
+  { to: "/startupvarsity", label: "Startup Hub", icon: "▲" },
+  { to: "/community", label: "Community", icon: "◉" },
+  { to: "/spotlight", label: "Spotlight", icon: "★" },
+  { to: "/profile", label: "My Profile", icon: "◐" },
 ];
 
 export function Sidebar() {
   const { data: me } = useCurrentUser();
 
   return (
-    <nav className="stack gap-2">
+    <nav className="space-y-1">
       {links.map((l) => (
         <NavLink
           key={l.to}
           to={l.to}
-          end={l.end}
-          className="nb-card"
-          style={({ isActive }) => ({
-            padding: "10px 14px",
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            fontFamily: "var(--font-display)",
-            fontWeight: 700,
-            background: isActive ? "var(--rooman-primary)" : "var(--surface-raised)",
-            color: isActive ? "#fff" : "var(--rooman-ink)",
-          })}
+          className={({ isActive }) =>
+            `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${
+              isActive
+                ? "bg-foreground text-background font-medium"
+                : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+            }`
+          }
         >
-          
+          <span className="display text-base">{l.icon}</span>
           {l.label}
         </NavLink>
       ))}
@@ -46,18 +41,15 @@ export function Sidebar() {
       {me?.role === "admin" && (
         <NavLink
           to="/admin/invites"
-          className="nb-card"
-          style={({ isActive }) => ({
-            padding: "10px 14px",
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            fontFamily: "var(--font-display)",
-            fontWeight: 700,
-            background: isActive ? "var(--rooman-blue)" : "var(--surface-raised)",
-            color: isActive ? "#fff" : "var(--rooman-ink)",
-          })}
+          className={({ isActive }) =>
+            `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${
+              isActive
+                ? "bg-accent text-accent-foreground font-medium"
+                : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+            }`
+          }
         >
+          <span className="display text-base">✉</span>
           Invites (Admin)
         </NavLink>
       )}

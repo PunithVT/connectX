@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { Badge, Button, Card } from "@/components/ui";
 import { listNotifications, markAllRead, markRead } from "@/api/notifications.api";
-import { timeAgo } from "@/lib/format";
+import { timeAgo } from "@/lib/roo-utils";
 import type { AppNotification } from "@/types/models";
 
 export function NotificationsPage() {
   const qc = useQueryClient();
-  const notifications = useQuery({
+
+  const { data: notifications = [], isLoading } = useQuery({
     queryKey: ["notifications", "all"],
     queryFn: () => listNotifications(false),
   });
@@ -17,57 +17,80 @@ export function NotificationsPage() {
     mutationFn: (id: number) => markRead(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["notifications"] }),
   });
+
   const readAll = useMutation({
     mutationFn: markAllRead,
     onSuccess: () => qc.invalidateQueries({ queryKey: ["notifications"] }),
   });
 
-  const row = (n: AppNotification) => (
-    <Card
-      key={n.id}
-      surface="brutalist"
-      style={{
-        opacity: n.is_read ? 0.65 : 1,
-        borderLeft: n.is_read ? undefined : "6px solid var(--rooman-primary)",
-      }}
-    >
-      <div className="row between wrap gap-2">
-        <div className="stack">
-          <div className="row gap-2">
-            <Badge color="var(--surface-raised)">{n.type}</Badge>
-            <span className="small muted">{timeAgo(n.created_at)}</span>
-          </div>
-          <p style={{ margin: "6px 0 0" }}>{n.message}</p>
-          {n.link && (
-            <Link to={n.link} className="small" style={{ color: "var(--rooman-blue)" }}>
-              View →
-            </Link>
-          )}
-        </div>
-        {!n.is_read && (
-          <Button variant="ghost" onClick={() => readOne.mutate(n.id)}>
-            Mark read
-          </Button>
-        )}
-      </div>
-    </Card>
-  );
-
   return (
-    <div className="stack gap-6">
-      <div className="row between wrap gap-2">
-        <h1 className="page-title">Notifications</h1>
-        <Button variant="secondary" onClick={() => readAll.mutate()}>
-          Mark all read
-        </Button>
+    <div className="mx-auto max-w-2xl px-4 py-10">
+      {/* Header */}
+      <div className="mb-8 flex items-start justify-between gap-4">
+        <div>
+          <p className="chip mb-2 text-xs uppercase tracking-widest text-muted-foreground">
+            Notifications
+          </p>
+          <h1 className="display text-4xl text-foreground">Stay in the loop.</h1>
+        </div>
+        <button
+          onClick={() => readAll.mutate()}
+          disabled={readAll.isPending || notifications.every((n) => n.is_read)}
+          className="mt-1 rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:border-accent hover:text-accent disabled:cursor-default disabled:opacity-40"
+        >
+          {readAll.isPending ? "Marking…" : "Mark all read"}
+        </button>
       </div>
 
-      {notifications.isLoading ? (
-        <div className="cx-spinner" />
-      ) : !notifications.data?.length ? (
-        <p className="muted">You're all caught up.</p>
+      {/* List */}
+      {isLoading ? (
+        <div className="flex justify-center py-16">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-accent" />
+        </div>
+      ) : notifications.length === 0 ? (
+        <p className="py-20 text-center text-sm text-muted-foreground">
+          You're all caught up.
+        </p>
       ) : (
-        <div className="stack gap-3">{notifications.data.map(row)}</div>
+        <div className="flex flex-col gap-3">
+          {notifications.map((n: AppNotification) => (
+            <div
+              key={n.id}
+              onClick={() => !n.is_read && readOne.mutate(n.id)}
+              className={[
+                "rounded-2xl border bg-card p-4 transition-opacity",
+                n.is_read
+                  ? "border-border opacity-60"
+                  : "cursor-pointer border-accent/30 hover:opacity-90",
+              ].join(" ")}
+            >
+              <div className="flex items-start justify-between gap-3">
+                {/* Left: message + link */}
+                <div className="flex flex-col gap-1 min-w-0">
+                  <p className="text-sm text-foreground leading-snug">{n.message}</p>
+                  {n.link && (
+                    <Link
+                      to={n.link}
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-xs text-accent hover:underline"
+                    >
+                      View →
+                    </Link>
+                  )}
+                  {n.created_at && (
+                    <span className="text-xs text-muted-foreground">
+                      {timeAgo(n.created_at)}
+                    </span>
+                  )}
+                </div>
+                {/* Right: type chip */}
+                <span className="chip shrink-0 text-xs text-muted-foreground">
+                  {n.type}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

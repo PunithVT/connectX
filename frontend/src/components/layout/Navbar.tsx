@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-
-import { Avatar } from "@/components/ui";
+import { Avatar } from "@/components/roo/Avatar";
 import { useCurrentUser, useLogout } from "@/features/auth/useAuth";
 import { listNotifications } from "@/api/notifications.api";
+import { initials, nameToHue } from "@/lib/roo-utils";
 import { listConversations } from "@/api/messages.api";
 
 export function Navbar() {
@@ -17,6 +17,7 @@ export function Navbar() {
     refetchInterval: 60_000,
   });
   const unread = notifications?.length ?? 0;
+  const name = me?.full_name ?? "";
 
   const { data: conversations } = useQuery({
     queryKey: ["conversations"],
@@ -27,95 +28,51 @@ export function Navbar() {
     conversations?.reduce((sum, c) => sum + (c.unread ?? 0), 0) ?? 0;
 
   return (
-    <header
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 30,
-        background: "var(--rooman-accent)",
-        borderBottom: "3px solid var(--rooman-ink)",
-      }}
-    >
-      <div className="container row between" style={{ height: 64 }}>
-        <Link to="/" className="row gap-2" style={{ alignItems: "center" }}>
-          <span
-            style={{
-              fontFamily: "var(--font-display)",
-              fontWeight: 800,
-              fontSize: 22,
-              background: "var(--rooman-ink)",
-              color: "var(--rooman-accent)",
-              padding: "2px 8px",
-            }}
-          >
-            connectX
-          </span>
-          <span className="small muted">Rooman Alumni</span>
+    <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur-sm">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
+        <Link to="/dashboard" className="flex items-center gap-2">
+          <span className="display text-xl font-semibold tracking-tight">connectX</span>
+          <span className="chip hidden sm:inline-flex">Rooman Alumni</span>
         </Link>
 
-        <div className="row gap-3">
-          <Link to="/messages" className="nb-badge" style={{ position: "relative" }}>
-            Messages
+        <div className="flex items-center gap-2">
+          <Link
+            to="/messages"
+            className="relative flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
             {unreadMessages > 0 && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: -8,
-                  right: -8,
-                  background: "var(--rooman-primary)",
-                  color: "#fff",
-                  borderRadius: "50%",
-                  border: "2px solid var(--rooman-ink)",
-                  minWidth: 20,
-                  height: 20,
-                  fontSize: 11,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "0 4px",
-                }}
-              >
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-medium text-white">
                 {unreadMessages}
               </span>
             )}
           </Link>
-          <Link to="/notifications" className="nb-badge" style={{ position: "relative" }}>
-            Alerts
+          <Link
+            to="/notifications"
+            className="relative flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
             {unread > 0 && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: -8,
-                  right: -8,
-                  background: "var(--rooman-primary)",
-                  color: "#fff",
-                  borderRadius: "50%",
-                  border: "2px solid var(--rooman-ink)",
-                  minWidth: 20,
-                  height: 20,
-                  fontSize: 11,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "0 4px",
-                }}
-              >
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-medium text-white">
                 {unread}
               </span>
             )}
           </Link>
-          <Link to="/profile" className="row gap-2" style={{ alignItems: "center" }}>
-            <Avatar name={me?.full_name} size={36} />
+
+          <Link to="/profile" className="shrink-0">
+            <Avatar initials={initials(name)} hue={nameToHue(name)} size={34} />
           </Link>
+
           <button
-            className="nb-btn"
-            style={{ background: "transparent", boxShadow: "none", padding: "4px 10px" }}
-            onClick={() => {
-              logout();
-              navigate("/login");
-            }}
+            onClick={() => { logout(); navigate("/login"); }}
+            className="rounded-full px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
           >
-            Logout
+            Log out
           </button>
         </div>
       </div>
