@@ -3,6 +3,7 @@ from fastapi import APIRouter
 
 from app.api.v1.routes import (
     auth,
+    bos_sso,
     invites,
     profiles,
     feed,
@@ -20,6 +21,7 @@ from app.api.v1.routes import (
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
+api_router.include_router(bos_sso.router, prefix="/auth/bos", tags=["auth"])
 api_router.include_router(invites.router, prefix="/invites", tags=["invites"])
 api_router.include_router(profiles.router, prefix="/profiles", tags=["profiles"])
 api_router.include_router(feed.router, prefix="/feed", tags=["feed"])

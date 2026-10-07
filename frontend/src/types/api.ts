@@ -11,6 +11,10 @@ export interface TokenResponse {
   token_type: string;
 }
 
+export interface BosSsoConfig {
+  enabled: boolean;
+}
+
 export interface InviteAcceptPayload {
   token: string;
   password: string;

@@ -32,6 +32,21 @@ class Settings(BaseSettings):
 
     CORS_ORIGINS: list[str] = ["http://localhost:5173"]
 
+    # Sign in with BOS (OpenID Connect against the BOS identity provider).
+    # Off unless BOS_SSO_ENABLED is true AND the four BOS_OIDC_* values are set.
+    # Email + password sign-in keeps working either way.
+    BOS_SSO_ENABLED: bool = False
+    BOS_OIDC_ISSUER: str = ""
+    BOS_OIDC_CLIENT_ID: str = ""
+    BOS_OIDC_CLIENT_SECRET: str = ""
+    # Must point at this API's callback, e.g.
+    # http://localhost:8000/api/v1/auth/bos/callback
+    BOS_OIDC_REDIRECT_URI: str = ""
+    # The BOS tenant (organization id) this connectX deployment belongs to.
+    # Only people from this tenant get an account created on first sign-in;
+    # empty means nobody is auto-created (existing accounts can still sign in).
+    BOS_TENANT_ID: str = ""
+
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
