@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "@/components/layout/AppShell";
 import { ProtectedRoute } from "@/features/auth/ProtectedRoute";
 import { LoginPage } from "@/features/auth/LoginPage";
+import { BosCompletePage } from "@/features/auth/BosCompletePage";
 import { InviteAcceptPage } from "@/features/invites/InviteAcceptPage";
 import { InviteAdminPage } from "@/features/invites/InviteAdminPage";
 import { FeedPage } from "@/features/feed/FeedPage";
@@ -25,6 +26,7 @@ export function AppRouter() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/auth/bos/complete" element={<BosCompletePage />} />
       <Route path="/invite/:token" element={<InviteAcceptPage />} />
 
       <Route

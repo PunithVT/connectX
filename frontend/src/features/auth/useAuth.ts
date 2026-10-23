@@ -1,6 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { fetchMe, login as loginApi } from "@/api/auth.api";
+import {
+  exchangeBosCode,
+  fetchBosSsoConfig,
+  fetchMe,
+  login as loginApi,
+} from "@/api/auth.api";
 import { useAuthStore } from "@/store";
 import type { LoginPayload } from "@/types/api";
 
@@ -18,6 +23,28 @@ export function useLogin() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (payload: LoginPayload) => loginApi(payload),
+    onSuccess: (data) => {
+      setTokens(data.access_token, data.refresh_token);
+      qc.invalidateQueries({ queryKey: ["me"] });
+    },
+  });
+}
+
+/** Whether "Sign in with BOS" is switched on; treated as off if the call fails. */
+export function useBosSsoConfig() {
+  return useQuery({
+    queryKey: ["bos-sso-config"],
+    queryFn: fetchBosSsoConfig,
+    staleTime: Infinity,
+    retry: false,
+  });
+}
+
+export function useBosExchange() {
+  const setTokens = useAuthStore((s) => s.setTokens);
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (code: string) => exchangeBosCode(code),
     onSuccess: (data) => {
       setTokens(data.access_token, data.refresh_token);
       qc.invalidateQueries({ queryKey: ["me"] });
